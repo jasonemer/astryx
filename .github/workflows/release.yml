@@ -216,7 +216,7 @@ jobs:
         run: pnpm build
 
       - name: Publish changed packages
-      if: secrets.NPM_TOKEN != ''
+        if: secrets.NPM_TOKEN != ''
         id: publish
         env:
           DRY_RUN: ${{ inputs.dry-run }}
