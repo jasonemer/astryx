@@ -216,6 +216,7 @@ jobs:
         run: pnpm build
 
       - name: Publish changed packages
+      if: secrets.NPM_TOKEN != ''
         id: publish
         env:
           DRY_RUN: ${{ inputs.dry-run }}
@@ -446,7 +447,7 @@ jobs:
         run: pnpm build
 
       - name: Publish canary versions
-        if: steps.fresh.outputs.publish == 'true'
+        if: steps.fresh.outputs.publish == 'true' && secrets.NPM_TOKEN != ''
         # Pure OIDC trusted publishing — no NPM_TOKEN. The canary version is
         # main's declared next version plus this commit, computed once above.
         env:
