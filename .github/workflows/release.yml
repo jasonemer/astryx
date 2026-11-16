@@ -216,13 +216,14 @@ jobs:
         run: pnpm build
 
       - name: Publish changed packages
-        if: secrets.NPM_TOKEN != ''
         id: publish
         env:
           DRY_RUN: ${{ inputs.dry-run }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           RELEASE_VERSION: ${{ inputs['release-version'] }}
         run: |
           set -eu
+          if [ -z "$NPM_TOKEN" ]; then echo "No NPM_TOKEN configured for this fork - skipping stable publish."; exit 0; fi
           published=0
           FAILED=""
           # Dependencies first, so the hold-back below sees every failed
@@ -447,13 +448,15 @@ jobs:
         run: pnpm build
 
       - name: Publish canary versions
-        if: steps.fresh.outputs.publish == 'true' && secrets.NPM_TOKEN != ''
+        if: steps.fresh.outputs.publish == 'true'
         # Pure OIDC trusted publishing — no NPM_TOKEN. The canary version is
         # main's declared next version plus this commit, computed once above.
         env:
           CANARY_VERSION: ${{ steps.fresh.outputs.version }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           set -eu
+          if [ -z "$NPM_TOKEN" ]; then echo "No NPM_TOKEN configured for this fork - skipping canary publish."; exit 0; fi
           [ -n "$CANARY_VERSION" ] || { echo "::error::No canary version was computed."; exit 1; }
 
           echo "Publishing canary ${CANARY_VERSION}"
