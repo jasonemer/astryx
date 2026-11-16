@@ -27,7 +27,7 @@ jobs:
       # the source file — native or CLI — can carry it. Tone and terminology
       # belong in the Crowdin style guide, not here.
       - name: Set file-level context
-              if: secrets.CROWDIN_PERSONAL_TOKEN != ''
+              if: secrets.CROWDIN_PERSONAL_TOKEN
         env:
           CROWDIN_PROJECT_ID: ${{ vars.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
