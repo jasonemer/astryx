@@ -30,7 +30,8 @@ jobs:
       id: crowdin-token
       env:
       CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
-        run: test -n "$CROWDIN_PERSONAL_TOKEN" && echo has-token=true >> $GITHUB_OUTPUT || echo has-token=false >> $GITHUB_OUTPUT
+        run: |
+        test -n "$CROWDIN_PERSONAL_TOKEN" && echo has-token=true >> $GITHUB_OUTPUT || echo has-token=false >> $GITHUB_OUTPUT
       - name: Set file-level context
         if: steps.crowdin-token.outputs.has-token == 'true'
         env:
