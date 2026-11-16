@@ -26,15 +26,8 @@ jobs:
       # crowdin.yml `files:` entry has no key for it, so nothing that syncs
       # the source file — native or CLI — can carry it. Tone and terminology
       # belong in the Crowdin style guide, not here.
-      - name: Check whether a Crowdin token is configured
-      id: crowdin-token
-      env:
-      CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
-        run: |
-        test -n "$CROWDIN_PERSONAL_TOKEN" && echo has-token=true >> $GITHUB_OUTPUT || echo has-token=false >> $GITHUB_OUTPUT
-      - name: Set file-level context
-        if: steps.crowdin-token.outputs.has-token == 'true'
-        env:
+     - name: Set file-level context
+       env:
           CROWDIN_PROJECT_ID: ${{ vars.CROWDIN_PROJECT_ID }}
           CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
           # Crowdin prefixes file paths with the integration branch name.
@@ -48,6 +41,7 @@ jobs:
             placeholders and rich-text tags exactly.
         run: |
           set -euo pipefail
+          if [ -z "$CROWDIN_PERSONAL_TOKEN" ]; then echo "No CROWDIN_PERSONAL_TOKEN configured for this fork - skipping Crowdin file-context update."; exit 0; fi
           api="https://api.crowdin.com/api/v2/projects/$CROWDIN_PROJECT_ID/files"
           auth="Authorization: Bearer $CROWDIN_PERSONAL_TOKEN"
           files=$(curl --fail-with-body -sS -H "$auth" "$api?limit=500") ||
